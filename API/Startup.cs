@@ -1,3 +1,4 @@
+using API.Helpers;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
@@ -22,6 +23,8 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
+            services.AddAutoMapper(typeof(MappingProfiles)); //location where our MappingProfiles is located means assembly where we have created our MappingProfiles
             services.AddControllers();
             services.AddDbContext<StoreContext>(x =>
                 x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
@@ -41,7 +44,8 @@ namespace API
             app.UseHttpsRedirection();  //middleware. if we accidently go to http url then it will automatically redirect us to https.
 
             app.UseRouting();   //middleware for using routing, in order for us to access our API endpoints, they have to be routed to those endpoints via middleware and we have routing enabled to allow that to happen.
-
+            app.UseStaticFiles();
+           
             app.UseAuthorization();
 
             //in order for our app to know which endpoints are available inside our controller so they can be routed
